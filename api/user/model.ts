@@ -17,8 +17,13 @@ const userSchema = new Schema({
   role: { type: String, enum: ["user", "admin"], default: "user" },
 });
 
-userSchema.pre("save", async () => {
+userSchema.pre("save", async function (next) {
   try {
     const hashedPassword = await bcrypt.hash(this.password ?? "", 10);
-  } catch (error) {}
+    this.password = hashedPassword;
+
+    next();
+  } catch (error) {
+    console.log(error);
+  }
 });
